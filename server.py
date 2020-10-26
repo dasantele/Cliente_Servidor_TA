@@ -1,3 +1,4 @@
+'''
 # import socket programming library
 import socket
 
@@ -69,7 +70,7 @@ def Main():
 if __name__ == '__main__':
     Main()
 
-    '''
+  
 import socket
 import sys
 
@@ -94,32 +95,40 @@ while True:
         print('sent {} bytes back to {}'.format(
             sent, address))
 
-
+'''
 from socket import *
 import sys
+import struct
 
 s = socket(AF_INET,SOCK_DGRAM)
+s.settimeout(10)
+
+ttl = struct.pack('b',1)
+
+s.setsockopt(IPPROTO_IP,IP_TTL,ttl)
+
+
 host =sys.argv[1]
 port = 9999
-buf =1024
+buf =2040
 addr = (host,port)
 file_name=sys.argv[2]
 
-s.sendto(file_name.encode('utf-8'),addr)
+try:
+    print("Sending "+ file_name)
+    sent = s.sendto(file_name.encode('utf-8'),addr)
+    while True:
+        print("Waiting response")
+        try:
+            data,server = s.recvfrom(buf)
+        except timeout:
+            print("timed out: No answers recieved")
+            break
+        else:
+            print("ack recieved %s from %s" %(data,server))
 
-f=open(file_name,"rb")
 
-data = f.read(buf)
-
-s.sendto(data,addr)
-
-while (True):
-    if(s.sendto(data,addr)):
-        print("sending ...") 
-        data = f.read(buf)
-    
-
-
-s.close()
-f.close()
-    '''
+    s.close()
+except timeout:
+    print("timed out: No answers recieved")
+            
