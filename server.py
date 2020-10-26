@@ -1,22 +1,25 @@
-'''
 # import socket programming library
 import socket
 
 # import thread module
 from _thread import *
 import threading
+import imageio
+
 
 print_lock = threading.Lock()
 
 
 # thread function
 def threaded(c):
+    print("entre")
     while True:
 
         # data received from client
-        #data = open("./test.txt")
         data = c.recv(1024)
-        input(data)
+        data = imageio.get_reader('imageio:./v1.mp4')
+        arch = data
+        print(arch)
         if not data:
             print('File not found')
 
@@ -28,7 +31,7 @@ def threaded(c):
         #data = data[::-1]
         print("envio de info")
         # send back reversed string to client
-        c.send(data)
+        c.sendall(arch.encode('utf-8'))
 
         # connection closed
     c.close()
@@ -66,8 +69,7 @@ def Main():
 if __name__ == '__main__':
     Main()
 
-'''
-
+    '''
 import socket
 import sys
 
@@ -91,4 +93,33 @@ while True:
         sent = sock.sendto(data, address)
         print('sent {} bytes back to {}'.format(
             sent, address))
+
+
+from socket import *
+import sys
+
+s = socket(AF_INET,SOCK_DGRAM)
+host =sys.argv[1]
+port = 9999
+buf =1024
+addr = (host,port)
+file_name=sys.argv[2]
+
+s.sendto(file_name.encode('utf-8'),addr)
+
+f=open(file_name,"rb")
+
+data = f.read(buf)
+
+s.sendto(data,addr)
+
+while (True):
+    if(s.sendto(data,addr)):
+        print("sending ...") 
+        data = f.read(buf)
     
+
+
+s.close()
+f.close()
+    '''
