@@ -25,7 +25,7 @@ def Main():
         #s.send(message.encode('ascii')) 
   
         # messaga received from server 
-        data = s.recv(1024) 
+        data = s.recvfrom(1024) 
   
         # print the received message 
         # here it would be a reverse of sent message 
@@ -72,37 +72,61 @@ finally:
     sock.close()
 
 '''
-from socket import *
+import socket
 import sys
 import select
 import hashlib
+from time import time
 
-host="0.0.0.0"
-port = 9999
 
-s = socket(AF_INET,SOCK_DGRAM)
+host="127.0.0.1"
+port = 55000
 
-s.bind((host,port))
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+
+#s.bind((host,port))
 
 while True:
     hashmd5 = hashlib.md5()   
     addr = (host,port)
     buf=2040
+    preparado = "Preparado"
+    s.sendto(preparado.encode("utf-8"), (host, port))
+    tiempo_inicial = time()
+
     print("Conectado con el servidor")
     print("Preparado para recibir datos del servidor")
-    data,addr = s.recvfrom(buf)
-    print ("Received %s bytes from:" %(len(data)),addr)
-    print(data)
-    print("sending ack to",addr)
     
+    data = s.recvfrom(buf) 
+    print ("Received %s bytes from:" %(len(data)),addr)
+    hashh = s.recvfrom(buf)
+    #logging.info("Recibio datos: video "+resp+ " de tamano " + str(round(Path(video).stat().st_size/(1024*1024), 2))+" MB")
+    #logging.info("Recibio su hash: "+ str(hashh.decode('utf-8')) )
+    print("Hash recibido: " + str(hashh.decode('utf-8')))
+    arch = data
+
+        #.decode('dbcs')
+        # print the received message 
+        # here it would be a reverse of sent message 
+    print('Received file from the server :'+ resp + "de tamaño" + str(round(Path(video).stat().st_size/(1024*1024), 2))+" MB")#,str(data.decode('ANSI'))) 
+    m = hashlib.sha256()
+    m.update(arch)#.encode('dbcs'))
+    h = str(m.hexdigest())
+    tiempo_final = time()
+    tiempo_ejecucion = tiempo_final - tiempo_inicial
+    #logging.info("Tiempo que se tardo en enviar los archivos: "+ str(round(tiempo_ejecucion, 2))+ " ms")
+        
+    print("tiempo de operación: "+ str(tiempo_ejecucion))
+    print("Digest calculado: ", m.hexdigest())
+
     if(True):
         s.sendto("File checked sucessfully".encode('utf-8'),addr)   
     else:
         s.sendto("File sent with problems".encode('utf-8'),addr)
-    s.close()
+        s.close()
     break
+s.close()
 
-if(s.timeout):
-    s.close()
+
     
 print ("Done")

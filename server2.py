@@ -96,7 +96,15 @@ def Main():
         print('Connected to :', addr[0], ':', addr[1])
         logging.info('Connected to : ,'+ str(addr[0]) +' , : , ' + str(addr[1]))
         # Start a new thread and return its identifier
+<<<<<<< HEAD
         start_new_thread(threaded, (s,video,addr))
+=======
+        data = c
+        logging.info("El cliente está en estado: " + str(data.decode("utf-8")))
+
+        print("Cliente "+ str(data.decode("utf-8")))
+        start_new_thread(threaded, (s,video, addr))
+>>>>>>> 70de8e9c396a2237f693f1259150133a3af13657
     s.close()
 
 
