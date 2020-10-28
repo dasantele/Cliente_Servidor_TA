@@ -22,40 +22,45 @@ print_lock = threading.Lock()
 
 
 # thread function
-def threaded(c,pvideo, addr):
+def threaded(c,pvideo,addr):
     while True:
 
-        # data received from client
-        
         options = pvideo
-        #c.send(options.encode("utf-8"))
-        print("Nombre arch enviado")
+        c.sendto(options.encode(),addr)
         video = pvideo
 
-        data = open(video, "rb")#, encoding="dbcs")
-        arch = data.read()
+        m = hashlib.sha256()
+        data = open(video, "rb")
+        arch = data.read(2040)
+        hashd =data.read()
+        m.update(hashd)
         if not data:
             print('File not found')
-
             # lock released on exit
             print_lock.release()
             break
 
-        # reverse the given string from client
-        #data = data[::-1]
-        print("Envio de informacion")
-        m = hashlib.sha256()
-        m.update(arch)#.encode('dbcs'))
-        h = str(m.hexdigest())
+        bytesEfectivamenteEnviados = 0
+        while(arch):
+            bytesEnviados = c.sendto(arch,addr)
+            if(bytesEnviados):
+                bytesEfectivamenteEnviados+=bytesEnviados
+                arch = data.read(2040)
+
+        data.close()
+
+        print("--> Envio de informacion")
         print("Digest enviado: ", m.hexdigest())
-        # send back reversed string to client
-        c.send(arch)#.encode('dbcs'))
-        c.send(m.hexdigest().encode("utf-8"))
+        bytesEnviadosHash = c.sendto(m.hexdigest().encode(),addr)
+
+
+        logging.info('SERVER cliente %s:%s bytes enviados en total %s',
+                 addr[0], addr[1], bytesEfectivamenteEnviados + bytesEnviadosHash)
+
 
         # lock released on exit
         print_lock.release()
         break
-
     # connection closed
     c.close()
 
@@ -94,6 +99,7 @@ def Main():
 
         print("Cliente "+ str(data.decode("utf-8")))
         start_new_thread(threaded, (s,video, addr))
+        
     s.close()
 
 

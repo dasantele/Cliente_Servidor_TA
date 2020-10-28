@@ -85,7 +85,8 @@ port = 55000
 s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 
 #s.bind((host,port))
-
+f = open("clienteRecibido.txt", 'wb')
+dataTot=b''
 while True:
     hashmd5 = hashlib.md5()   
     addr = (host,port)
@@ -97,27 +98,34 @@ while True:
     print("Conectado con el servidor")
     print("Preparado para recibir datos del servidor")
     
-    data = s.recvfrom(buf) 
+   
+
+    data = s.recvfrom(buf)
+    #f.write(data) 
+    #dataTot+=data
     print ("Received %s bytes from:" %(len(data)),addr)
     hashh = s.recvfrom(buf)
     #logging.info("Recibio datos: video "+resp+ " de tamano " + str(round(Path(video).stat().st_size/(1024*1024), 2))+" MB")
     #logging.info("Recibio su hash: "+ str(hashh.decode('utf-8')) )
-    print("Hash recibido: " + str(hashh.decode('utf-8')))
+    hashRecibido = hashh
+    print("Hash recibido: " + str(hashRecibido))
     arch = data
 
         #.decode('dbcs')
         # print the received message 
         # here it would be a reverse of sent message 
-    print('Received file from the server :'+ resp + "de tamaño" + str(round(Path(video).stat().st_size/(1024*1024), 2))+" MB")#,str(data.decode('ANSI'))) 
-    m = hashlib.sha256()
-    m.update(arch)#.encode('dbcs'))
-    h = str(m.hexdigest())
+    #print('Received file from the server :'+ resp + "de tamaño" + str(round(Path(video).stat().st_size/(1024*1024), 2))+" MB")#,str(data.decode('ANSI'))) 
+    #m = hashlib.sha256()
+    #m.update(dataTot)#.encode('dbcs'))
+    #h = str(m.hexdigest())
+    print("Recibido: "+ hashRecibido[0].decode() )
+    #print("Calculado: "+h)
     tiempo_final = time()
     tiempo_ejecucion = tiempo_final - tiempo_inicial
     #logging.info("Tiempo que se tardo en enviar los archivos: "+ str(round(tiempo_ejecucion, 2))+ " ms")
         
     print("tiempo de operación: "+ str(tiempo_ejecucion))
-    print("Digest calculado: ", m.hexdigest())
+    #print("Digest calculado: ", m.hexdigest())
 
     if(True):
         s.sendto("File checked sucessfully".encode('utf-8'),addr)   
