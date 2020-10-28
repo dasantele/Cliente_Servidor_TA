@@ -8,19 +8,21 @@ def Main():
     # Define the port on which you want to connect 
     port = 55000
   
-    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM) 
-  
-    # connect to server on local computer 
-    if(s.connect((host,port))==0): 
-        print("Conectado con el servidor")
-        print("Preparado para recibir datos del servidor")
+    s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) 
+    
+    # connect to server on local computer
+    preparado = "Preparado"
+    s.sendto(preparado.encode("utf-8"), (host, port))
+    #if(s.connect((host,port))==0): 
+    print("Conectado con el servidor")
+    print("Preparado para recibir datos del servidor")
     
     # message you send to server 
     message = "prueba"
     while True: 
 
         # message sent to server 
-        s.send(message.encode('ascii')) 
+        #s.send(message.encode('ascii')) 
   
         # messaga received from server 
         data = s.recv(1024) 

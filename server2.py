@@ -26,7 +26,7 @@ def threaded(c,pvideo):
     while True:
 
         # data received from client
-        data = c.recv(1024)
+        data = c.recvfrom(1024)
 
         logging.info("El cliente está en estado: " + str(data.decode("utf-8")))
 
@@ -73,7 +73,7 @@ def Main():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind((host, port))
     print("Server binded to port", port)
-
+    addr = (host,port)
     # put the socket into listening mode
     print("Server is listening")
     resp = input("Ingrese que archivo desea que se envie a los clientes (1 o 2) ")
@@ -86,12 +86,11 @@ def Main():
     # a forever loop until client wants to exit
     while True:
         # establish connection with client
-
-        # lock acquired by client
+        c, addr = s.recvfrom(2**15)
         print_lock.acquire()
-
-        print('Connected to client')
-        logging.info('Connected to client')
+        print(c)
+        print('Connected to :', addr[0], ':', addr[1])
+        logging.info('Connected to : ,'+ str(addr[0]) +' , : , ' + str(addr[1]))
         # Start a new thread and return its identifier
         start_new_thread(threaded, (s,video))
     s.close()
