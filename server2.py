@@ -99,7 +99,7 @@ def Main():
 
         print("Cliente "+ str(data.decode("utf-8")))
         start_new_thread(threaded, (s,video, addr))
-        
+
     s.close()
 
 
