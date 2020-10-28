@@ -22,17 +22,14 @@ print_lock = threading.Lock()
 
 
 # thread function
-def threaded(c,pvideo):
+def threaded(c,pvideo, addr):
     while True:
 
         # data received from client
-        data = c.recvfrom(1024)
-
-        logging.info("El cliente está en estado: " + str(data.decode("utf-8")))
-
-        print("Cliente "+ str(data.decode("utf-8")))
+        
         options = pvideo
-        c.send(options.encode("utf-8"))
+        #c.send(options.encode("utf-8"))
+        print("Nombre arch enviado")
         video = pvideo
 
         data = open(video, "rb")#, encoding="dbcs")
@@ -92,7 +89,11 @@ def Main():
         print('Connected to :', addr[0], ':', addr[1])
         logging.info('Connected to : ,'+ str(addr[0]) +' , : , ' + str(addr[1]))
         # Start a new thread and return its identifier
-        start_new_thread(threaded, (s,video))
+        data = c
+        logging.info("El cliente está en estado: " + str(data.decode("utf-8")))
+
+        print("Cliente "+ str(data.decode("utf-8")))
+        start_new_thread(threaded, (s,video, addr))
     s.close()
 
 
