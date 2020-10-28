@@ -1,6 +1,6 @@
+'''
 import socket 
-  
-  
+ 
 def Main(): 
     # local host IP '127.0.0.1' 
     host = '127.0.0.1'
@@ -42,7 +42,7 @@ def Main():
   
 if __name__ == '__main__': 
     Main() 
-'''
+
 import socket
 import sys
 
@@ -71,33 +71,38 @@ finally:
     print('closing socket')
     sock.close()
 
-
+'''
 from socket import *
 import sys
 import select
+import hashlib
 
 host="0.0.0.0"
 port = 9999
+
 s = socket(AF_INET,SOCK_DGRAM)
+
 s.bind((host,port))
 
-addr = (host,port)
-buf=1024
+while True:
+    hashmd5 = hashlib.md5()   
+    addr = (host,port)
+    buf=2040
+    print("Conectado con el servidor")
+    print("Preparado para recibir datos del servidor")
+    data,addr = s.recvfrom(buf)
+    print ("Received %s bytes from:" %(len(data)),addr)
+    print(data)
+    print("sending ack to",addr)
+    
+    if(True):
+        s.sendto("File checked sucessfully".encode('utf-8'),addr)   
+    else:
+        s.sendto("File sent with problems".encode('utf-8'),addr)
+    s.close()
+    break
 
-data,addr = s.recvfrom(buf)
-print ("Received File:",data.strip())
-f = open(data.strip(),"wb")
-
-data,addr = s.recvfrom(buf)
-
-try:
-    while(data):
-        f.write(data)
-        s.settimeout(2)
-        data,addr = s.recvfrom(buf)
-except timeout:
-    f.close()
+if(s.timeout):
     s.close()
     
-print ("File Downloaded")
-'''
+print ("Done")
